@@ -1,0 +1,150 @@
+#!/usr/bin/php
+
+<?php
+
+use Dotenv\Dotenv;
+use Framework\Database\Migrator;
+
+require __DIR__ . '/vendor/autoload.php';
+
+Dotenv::createImmutable(__DIR__)->load();
+
+switch ($argv[1] ?? null) {
+    case 'serve':
+        $port = $argv[2] ?? 8000;
+
+        echo shell_exec("php -S localhost:{$port} -t public");
+
+        break;
+
+    case 'migrate:up':
+        Migrator::up();
+
+        break;
+
+    case 'migrate:down':
+        $confirm = readline('(!) Действительно удалить все таблицы? [y/N]: ');
+
+        if ($confirm && strtolower($confirm) === 'y') {
+            Migrator::down();
+        }
+
+        break;
+
+    case 'migrate:fresh':
+        $confirm = readline('Вы уверены? [y/N]: ');
+
+        if ($confirm && strtolower($confirm) === 'y') {
+            Migrator::fresh();
+        }
+
+        break;
+
+    case 'make:component':
+        if (!isset($argv[2])) {
+            die('[Ошибка] Укажите название компонента: php alisa make:component <name>.');
+        }
+
+        $name = $argv[2];
+        $path = project_path('app/Components/' . $name . '.php');
+
+        if (file_exists($path)) {
+            die('[Ошибка] Компонент уже существует: ' . $path . '" ');
+        }
+
+        $stub = file_get_contents(project_path('framework/stubs/component.stub'));
+
+        $stub = str_replace('%name%', $name, $stub);
+
+        file_put_contents($path, $stub);
+
+        echo '[OK] Компонент создан: ' . $path;
+
+        break;
+
+    case 'make:controller':
+        if (!isset($argv[2])) {
+            die('[Ошибка] Укажите название контролера: php alisa make:controller <name>.');
+        }
+
+        $name = $argv[2];
+        $path = project_path('app/Controllers/' . $name . '.php');
+
+        if (file_exists($path)) {
+            die('[Ошибка] Контроллер уже существует: ' . $path . '" ');
+        }
+
+        $stub = file_get_contents(project_path('framework/stubs/controller.stub'));
+
+        $stub = str_replace('%name%', $name, $stub);
+
+        file_put_contents($path, $stub);
+
+        echo '[OK] Контроллер создан: ' . $path;
+
+        break;
+
+    case 'make:middleware':
+        if (!isset($argv[2])) {
+            die('[Ошибка] Укажите название мидлвари: php alisa make:middleware <name>.');
+        }
+
+        $name = $argv[2];
+        $path = project_path('app/Middlewares/' . $name . '.php');
+
+        if (file_exists($path)) {
+            die('[Ошибка] Мидлваря уже существует: ' . $path . '" ');
+        }
+
+        $stub = file_get_contents(project_path('framework/stubs/middleware.stub'));
+
+        $stub = str_replace('%name%', $name, $stub);
+
+        file_put_contents($path, $stub);
+
+        echo '[OK] Мидлваря создана: ' . $path;
+
+        break;
+
+    case 'make:migration':
+        if (!isset($argv[2])) {
+            die('[Ошибка] Укажите название таблицы: php alisa make:migration <table>.');
+        }
+
+        $table = $argv[2];
+        $path = project_path('database/migrations/' . time() . '-table-' . $table . '.php');
+
+        if (file_exists($path)) {
+            die('[Ошибка] Миграция уже существует: ' . $path . '" ');
+        }
+
+        $stub = file_get_contents(project_path('framework/stubs/migration.stub'));
+
+        $stub = str_replace('%table%', $table, $stub);
+
+        file_put_contents($path, $stub);
+
+        echo '[OK] Миграция создана: ' . $path;
+
+        break;
+
+    case 'help':
+    case '--help':
+    case '-h':
+    default:
+        echo "----------------------" . PHP_EOL;
+        echo "| Доступные команды: |" . PHP_EOL;
+        echo "----------------------" . PHP_EOL;
+        echo "  [Сервер]" . PHP_EOL;
+        echo "      - php alisa serve <port?> .................. Запустить сервер" . PHP_EOL;
+        echo "  [Создать]" . PHP_EOL;
+        echo "      - php alisa make:component <name> .......... Создать компонент" . PHP_EOL;
+        echo "      - php alisa make:controller <name> ......... Создать контроллер" . PHP_EOL;
+        echo "      - php alisa make:middleware <name> ......... Создать мидлварь" . PHP_EOL;
+        echo "      - php alisa make:migration <table> ......... Создать миграцию" . PHP_EOL;
+        echo "  [Миграции]" . PHP_EOL;
+        echo "      - php alisa migrate:up ..................... Накатить миграции" . PHP_EOL;
+        echo "      - php alisa migrate:down ................... Откатить миграции" . PHP_EOL;
+        echo "      - php alisa migrate:fresh .................. Перекатить все таблицы" . PHP_EOL;
+        break;
+}

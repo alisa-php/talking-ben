@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Components;
+
+use Alisa\Component;
+
+class %name% extends Component
+{
+    public function register()
+    {
+        //
+    }
+}

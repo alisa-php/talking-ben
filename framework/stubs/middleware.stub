@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Middlewares;
+
+use Alisa\Context;
+
+class %name%
+{
+    public function __invoke(Context $context, $next)
+    {
+        $next($context);
+    }
+}
