@@ -12,7 +12,7 @@ class MainController
 {
     public function beforeRun(Context $context)
     {
-        if (!Session::get('already_call')) {
+        if ($context->get('session.new') && !Session::get('already_call')) {
             Session::set('already_call', true);
             user()->increment('call_count');
         }
@@ -20,11 +20,6 @@ class MainController
 
     public function start(Context $context)
     {
-        if (!Session::get('already_call')) {
-            Session::set('already_call', true);
-            user()->increment('call_count');
-        }
-
         $text = Markup::variant([
             'Выполняется звонок Б{{е},{+э}}ну...',
             'Звоню Б{{е},{+э}}ну, секунду...',
