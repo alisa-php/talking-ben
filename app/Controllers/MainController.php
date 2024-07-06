@@ -108,29 +108,58 @@ class MainController
     {
         user()->increment('question_count');
 
-        $dice = mt_rand(1, 10);
+        $chances = [
+            ['%' => 42.5, 'result' => ['text' => '💬🐶 Yee-es...', 'sound' => 'yes']],
+            ['%' => 42.5, 'result' => ['text' => '💬🐶 No.', 'sound' => 'no']],
+            ['%' => 10, 'result' => ['text' => '💬🐶 Hoho-ho...', 'sound' => 'hohoho']],
+            ['%' => 5, 'result' => ['text' => '💬🐶 Ughh.', 'sound' => 'ughh']]
+        ];
 
-        if (in_array($dice, [1, 2, 3])) {
-            $text = '💬🐶 Yee-es...';
-            $sound = 'yes';
-        }
+        $result = roll($chances);
 
-        if (in_array($dice, [4, 5, 6])) {
-            $text = '💬🐶 No.';
-            $sound = 'no';
-        }
+        $context->reply($result['text'], '{audio:' . $result['sound'] . '}', buttons: 'main');
+    }
 
-        if (in_array($dice, [7, 8, 9])) {
-            $text = '💬🐶 Hoho-ho...';
-            $sound = 'hohoho';
-        }
+    public function yesOrNo(Context $context)
+    {
+        user()->increment('question_count');
 
-        if (in_array($dice, [10])) {
-            $text = '💬🐶 Ughh.';
-            $sound = 'ughh';
-        }
+        $chances = [
+            ['%' => 50, 'result' => ['text' => '💬🐶 Yee-es...', 'sound' => 'yes']],
+            ['%' => 50, 'result' => ['text' => '💬🐶 No.', 'sound' => 'no']],
+        ];
 
-        $context->reply($text, '{audio:' . $sound . '}', buttons: 'main');
+        $result = roll($chances);
+
+        $context->reply($result['text'], '{audio:' . $result['sound'] . '}', buttons: 'main');
+    }
+
+    public function yes(Context $context)
+    {
+        user()->increment('question_count');
+
+        $chances = [
+            ['%' => 90, 'result' => ['text' => '💬🐶 Yee-es...', 'sound' => 'yes']],
+            ['%' => 10, 'result' => ['text' => '💬🐶 No.', 'sound' => 'no']],
+        ];
+
+        $result = roll($chances);
+
+        $context->reply($result['text'], '{audio:' . $result['sound'] . '}', buttons: 'main');
+    }
+
+    public function no(Context $context)
+    {
+        user()->increment('question_count');
+
+        $chances = [
+            ['%' => 10, 'result' => ['text' => '💬🐶 Yee-es...', 'sound' => 'yes']],
+            ['%' => 90, 'result' => ['text' => '💬🐶 No.', 'sound' => 'no']],
+        ];
+
+        $result = roll($chances);
+
+        $context->reply($result['text'], '{audio:' . $result['sound'] . '}', buttons: 'main');
     }
 
     public function exception(Context $context, Throwable $exception)
